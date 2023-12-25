@@ -3,7 +3,6 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const morgan = require("morgan");
-const mongoose = require("mongoose");
 dotenv.config();
 
 // internal import
@@ -31,8 +30,8 @@ app.use(morgan("dev"));
 // bypass url
 // app.use("/api/users", usersRouter);
 app.use("/api/auth/public",AuthRoutes)
-app.use("/api/products", productRouter);
-app.use("/api/categories", categoriesRouter);
+app.use("/api/products/private",productRouter);
+app.use("/api/categories/private",categoriesRouter);
 app.use("/api/reviews", reviewRouter);
 
 

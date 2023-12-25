@@ -19,11 +19,6 @@ const productSchema=new mongoose.Schema({
     ref:"Category",
     required:true,
   },
-  sizes:{
-    type:[String],
-    enum:["S","M","L","XL","XXL"],
-    required:true
-  },
   colors:{
     type:[String],
     required:true,
@@ -33,10 +28,10 @@ const productSchema=new mongoose.Schema({
     required:true,
     ref:"User",
   },
-  image_links:
+  image_link:
     {
       type:String,
-      default:"https://via.placeholder.com/150",
+      required:true,
     },
   reviews:[
     {

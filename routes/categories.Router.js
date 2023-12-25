@@ -13,11 +13,11 @@ router.post("/",isloggedIn,createCategory);
 
 router.get("/",getAllCategory);
 
-router.get("/:id",getSingleCategory);
+router.get("/:cid",getSingleCategory);
 
-router.put("/:id",isloggedIn,updateSingleCategory)
+router.put("/:cid",isloggedIn,updateSingleCategory)
 
-router.delete("/:id",isloggedIn,deleteSingleCategory)
+router.delete("/:cid",isloggedIn,deleteSingleCategory)
 
 module.exports=router;
 
