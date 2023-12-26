@@ -15,13 +15,13 @@ router.post("/",isloggedIn,createBrand);
 router.get("/",getAllBrands);
 
 //get a single brand
-router.get("/:cid",getSingleBrand);
+router.get("/:bid",getSingleBrand);
 
 //update a single brand
-router.put("/:cid",isloggedIn,updateSingleBrand)
+router.put("/:bid",isloggedIn,updateSingleBrand)
 
 // delete a single brand
-router.delete("/:cid",isloggedIn,deleteSingleBrand)
+router.delete("/:bid",isloggedIn,deleteSingleBrand)
 
 module.exports=router;
 

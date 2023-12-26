@@ -10,13 +10,13 @@ const { default: mongoose } = require("mongoose");
 //@ access Privet/Admin
 const createCategory = asyncHandler(async (req, res) => {
   try {
-    const { title } = req.body;
+    const { name } = req.body;
 
-    if (!title) {
+    if (!name) {
       throw new Error("Filed must be fill");
     }
     // category exists
-    const categoryFound = await Category.findOne({ title });
+    const categoryFound = await Category.findOne({ name });
 
     if (categoryFound) {
       throw new Error("Category already exists1");
@@ -24,7 +24,7 @@ const createCategory = asyncHandler(async (req, res) => {
 
     // create category
     const category = await Category.create({
-      title,
+      name,
       user: req.userAuthId,
     });
 
@@ -97,10 +97,10 @@ const getSingleCategory = asyncHandler(async (req, res) => {
 //access privet/Admin
 const updateSingleCategory = asyncHandler(async (req, res) => {
   try {
-    const { title } = req.body;
+    const { name } = req.body;
     const cid = req.params.cid;
 
-    if(!title){
+    if(!name){
       throw new Error("Field must be fill");
     }
     //check mogoose id
@@ -111,7 +111,7 @@ const updateSingleCategory = asyncHandler(async (req, res) => {
     // update
     const category = await Category.findByIdAndUpdate(
       { _id: cid },
-      { title },
+      { name },
       { new: true }
     );
 
@@ -138,6 +138,11 @@ const deleteSingleCategory = asyncHandler(async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(cid)) {
       res.status(404).json({ message: "category id not found" });
       return;
+    }
+
+    const categoryExistingProduct=await Category.findById({ _id: cid });
+    if(categoryExistingProduct?.products.length!==0){
+      throw new Error("Existing Category product must be delete");
     }
 
     const category = await Category.findByIdAndDelete({ _id: cid });

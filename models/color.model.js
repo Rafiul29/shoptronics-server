@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const brandSchema = new mongoose.Schema({
+const colorSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -18,5 +18,5 @@ const brandSchema = new mongoose.Schema({
   ],
 },{timestamps:true});
 
-const Brand=mongoose.model("Brand",brandSchema);
-module.exports=Brand;
+const Color=mongoose.model("Colr",colorSchema);
+module.exports=Color;

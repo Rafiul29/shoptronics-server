@@ -2,14 +2,15 @@
 const asyncHandler = require("express-async-handler");
 
 // internal import
-const Brand =require('../models/brand.model')
+const Color =require('../models/color.model')
 const { default: mongoose } = require("mongoose");
 
 // @desc create new category
 //@route POST /api/categories
 //@ access Privet/Admin
-const createBrand = asyncHandler(async (req, res) => {
+const createColor = asyncHandler(async (req, res) => {
   try {
+
     const { name } = req.body;
 
     if (!name) {
@@ -17,22 +18,22 @@ const createBrand = asyncHandler(async (req, res) => {
     }
 
     // brand exists
-    const brandFound = await Brand.findOne({ name });
+    const colorFound = await Color.findOne({ name });
 
-    if (brandFound) {
-      throw new Error("Brand already exists1");
+    if (colorFound) {
+      throw new Error("Color already exists1");
     }
 
     // create brand
-    const brand = await Brand.create({
+    const color = await Color.create({
       name,
       user: req.userAuthId,
     });
 
     res.json({
       status: "success",
-      message: "Brand created successfully",
-      brand,
+      message: "Color created successfully",
+      color,
     });
 
   } catch (error) {
@@ -47,15 +48,15 @@ const createBrand = asyncHandler(async (req, res) => {
 //@route GET /api/categories
 //@ access Public
 
-const getAllBrands = asyncHandler(async (req, res) => {
+const getAllColors = asyncHandler(async (req, res) => {
   try {
 
-    const brands = await Brand.find({}).populate("products");
+    const colors = await Color.find({}).populate("products");
 
     res.json({
       status: "success",
       message: "Brand fetched successfully",
-      brands,
+      colors,
     });
 
   } catch (error) {
@@ -70,21 +71,21 @@ const getAllBrands = asyncHandler(async (req, res) => {
 //@route GET /api/categories/:id
 //@ access Public
 
-const getSingleBrand = asyncHandler(async (req, res) => {
+const getSingleColor = asyncHandler(async (req, res) => {
   try {
     
-    const bid = req.params.bid;
+    const cid = req.params.cid;
 
-    if (!mongoose.Types.ObjectId.isValid(bid)) {
-      res.status(404).json({ message: "brand id not found" });
+    if (!mongoose.Types.ObjectId.isValid(cid)) {
+      res.status(404).json({ message: "color id not found" });
       return;
     }
 
-    const brand = await Brand.findById({ _id: bid }).populate('products');
+    const brand = await Color.findById({ _id: bid }).populate('products');
 
     res.json({
       status: "success",
-      message: "Brand fetch successfully",
+      message: "Colors fetch successfully",
       brand,
     });
   } catch (error) {
@@ -98,22 +99,22 @@ const getSingleBrand = asyncHandler(async (req, res) => {
 //@desc update single product
 // @route PUT /api/products/:id
 //access privet/Admin
-const updateSingleBrand = asyncHandler(async (req, res) => {
+const updateSingleColor = asyncHandler(async (req, res) => {
   try {
     const { name } = req.body;
-    const bid = req.params.bid;
+    const cid = req.params.cid;
 
     if(!name){
       throw new Error("Field must be fill");
     }
     //check mogoose id
-    if (!mongoose.Types.ObjectId.isValid(bid)) {
-      res.status(404).json({ message: "brand id not found" });
+    if (!mongoose.Types.ObjectId.isValid(cid)) {
+      res.status(404).json({ message: "color id not found" });
       return;
     }
     // update
-    const brand = await Brand.findByIdAndUpdate(
-      { _id: bid },
+    const color = await Color.findByIdAndUpdate(
+      { _id: cid },
       { name },
       { new: true }
     );
@@ -121,9 +122,9 @@ const updateSingleBrand = asyncHandler(async (req, res) => {
     res.json({
       status: "success",
       message: "brand updated successfully",
-      brand,
+      color,
     });
-  } catch (error) {
+  }catch (error) {
     res.json({
       status: "failed",
       message: error.message,
@@ -134,23 +135,27 @@ const updateSingleBrand = asyncHandler(async (req, res) => {
 //@desc delete single product
 // @route DELETE /api/products/:id
 //access privet/Admin
-const deleteSingleBrand = asyncHandler(async (req, res) => {
+const deleteSingleColor = asyncHandler(async (req, res) => {
   try {
-    const bid = req.params.bid;
+    const cid = req.params.cid;
 
-    if (!mongoose.Types.ObjectId.isValid(bid)) {
-      res.status(404).json({ message: "brand id not found" });
+    if (!mongoose.Types.ObjectId.isValid(cid)) {
+      res.status(404).json({ message: "color id not found" });
       return;
     }
-    const brandExistingProduct=await Brand.findById({ _id: bid });
-    if(brandExistingProduct?.products.length!==0){
-      throw new Error("Existing brand product must be delete");
+
+    const colorExistingProduct=await Color.findById({ _id: cid });
+
+    if(colorExistingProduct?.products.length!==0){
+      throw new Error("Existing color product must be delete");
     }
-    const brand = await Brand.findByIdAndDelete({ _id: bid });
+
+    const color = await Color.findByIdAndDelete({ _id: bid });
+
     res.json({
       status: "success",
       message: "brand deleted successfully",
-      brand,
+      color,
     });
   } catch (error) {
     res.json({
@@ -161,9 +166,9 @@ const deleteSingleBrand = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  createBrand,
-  getAllBrands,
-  getSingleBrand,
-  updateSingleBrand,
-  deleteSingleBrand,
+  createColor,
+  getAllColors,
+  getSingleColor,
+  updateSingleColor,
+  deleteSingleColor,
 };
