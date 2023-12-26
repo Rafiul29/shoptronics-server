@@ -15,16 +15,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    phone: {
+      type: String,
+      required: true,
+    },
     orders: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Order",
       },
     ],
-    phone: {
-      type: String,
-      required: true,
-    },
     bookings: [
       {
         type: mongoose.Schema.Types.ObjectId,

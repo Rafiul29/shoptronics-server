@@ -15,24 +15,24 @@ const productSchema=new mongoose.Schema({
     required:true,
   },
   category:{
-    type:String,
-    ref:"Category",
+    type:mongoose.Schema.Types.ObjectId,
     required:true,
+    ref:"Category",
   },
   colors:{
     type:[String],
     required:true,
-  },
-  user:{
-    type:mongoose.Schema.Types.ObjectId,
-    required:true,
-    ref:"User",
   },
   image_link:
     {
       type:String,
       required:true,
     },
+  user:{
+    type:mongoose.Schema.Types.ObjectId,
+    required:true,
+    ref:"User",
+  },
   reviews:[
     {
       type:mongoose.Schema.Types.ObjectId,

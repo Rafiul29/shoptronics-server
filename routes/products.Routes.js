@@ -15,12 +15,12 @@ router.post("/",isloggedIn,isAdmin,createProduct);
 router.get("/", getAllProducts);
 
 // get single product
-router.get("/:id",getSingleProduct)
+router.get("/:pid",getSingleProduct)
 
 // update single product
-router.put("/:id",isloggedIn,isAdmin,updateSingleProduct);
+router.put("/:pid",isloggedIn,isAdmin,updateSingleProduct);
 
 //delete single product
-router.delete("/:id",isloggedIn,isAdmin, deleteSingleProduct);
+router.delete("/:pid",isloggedIn,isAdmin, deleteSingleProduct);
 
 module.exports=router

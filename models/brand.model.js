@@ -18,5 +18,5 @@ const brandSchema = new mongoose.Schema({
   ],
 },{timestamps:true});
 
-const Category=mongoose.model("Brand",brandSchema);
-module.exports=Category;
+const Brand=mongoose.model("Brand",brandSchema);
+module.exports=Brand;

@@ -8,9 +8,10 @@ dotenv.config();
 // internal import
 const dbConnect = require("./config/dbConnect");
 // const usersRouter = require("./routes/users.route");
-const AuthRoutes=require("./routes/Auth.Router")
+const authRoutes=require("./routes/auth.Router")
 const productRouter = require("./routes/products.Routes");
 const categoriesRouter = require("./routes/categories.Router.js");
+const brandRouter=require('./routes/brand.Routes')
 const reviewRouter = require("./routes/review.Routes");
 const {
   globalErrorHandler,
@@ -28,10 +29,11 @@ app.use(cors());
 app.use(morgan("dev"));
 
 // bypass url
-// app.use("/api/users", usersRouter);
-app.use("/api/auth/public",AuthRoutes)
+app.use("/api/auth/public",authRoutes)
 app.use("/api/products/private",productRouter);
 app.use("/api/categories/private",categoriesRouter);
+app.use("/api/brands/private",brandRouter);
+
 app.use("/api/reviews", reviewRouter);
 
 

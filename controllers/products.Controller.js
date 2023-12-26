@@ -4,10 +4,11 @@ const asyncHandler = require("express-async-handler");
 // internal import
 const Product = require("../models/product.model");
 const Category = require("../models/category.model");
+const { default: mongoose } = require("mongoose");
 
 // create a new product
 // @route POST /api/products/
-//access privet/Admin
+//access private/Admin
 const createProduct = asyncHandler(async (req, res) => {
   try {
     const {
@@ -44,7 +45,7 @@ const createProduct = asyncHandler(async (req, res) => {
     // push the product into category
     // find the category
     const categoryFound = await Category.findOne({
-      title: category,
+     _id:category,
     });
 
     if (!categoryFound) {
@@ -52,7 +53,6 @@ const createProduct = asyncHandler(async (req, res) => {
         "Category not found, please create category first ir check category name"
       );
     }
-
     const product = await Product.create({
       title,
       description,
@@ -125,7 +125,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
     }
 
     // await the query
-    const products = await productQuery;
+    const products = await productQuery.populate('category');
 
     res.json({
       status: "success",
@@ -141,7 +141,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
 });
 
 //@desc get single product
-// @route GET /api/products/:id
+// @route GET /api/products/:pid
 //access public
 const getSingleProduct = asyncHandler(async (req, res) => {
   try {
@@ -152,7 +152,7 @@ const getSingleProduct = asyncHandler(async (req, res) => {
       return;
     }
 
-    const product = await Product.findById({ _id: pid });
+    const product = await Product.findById({ _id: pid }).populate('category');
     if (!product) {
       throw new Error("Product not found");
     }
@@ -237,11 +237,16 @@ const deleteSingleProduct = asyncHandler(async (req, res) => {
       res.status(404).json({ message: "product id not found" });
       return;
     }
-    const product = await Product.findByIdAndDelete({ _id: id });
-  
+
+    const product = await Product.findByIdAndDelete({ _id: pid });
+
+    await Category.findOneAndUpdate(product.category,{
+      $pull:{
+        products:product._id
+      }
+    });
+
     res.json({
-      status: "success",
-      message: "Product deleted successfully",
       product,
     });
   }catch(error){

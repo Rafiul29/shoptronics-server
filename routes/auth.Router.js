@@ -2,7 +2,7 @@
 const express=require('express');
 
 // internal import
-const {registerUser,loginUser} = require('../controllers/users.controller');
+const {registerUser,loginUser} =require("../controllers/auth.Controller")
 
 //router
 const router=express.Router();
