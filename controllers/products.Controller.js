@@ -6,6 +6,7 @@ const Product = require("../models/product.model");
 const Category = require("../models/category.model");
 const Brand =require("../models/brand.model")
 const { default: mongoose } = require("mongoose");
+const Color = require("../models/color.model");
 
 // create a new product
 // @route POST /api/products/
@@ -23,7 +24,6 @@ const createProduct = asyncHandler(async (req, res) => {
       totalQty,
       brand,
     } = req.body;
-
     if (
       !name ||
       !description ||
@@ -61,16 +61,26 @@ const createProduct = asyncHandler(async (req, res) => {
 
     if (!brandFound) {
       throw new Error(
-        "Brand not found, please create category first  check brand name"
+        "Brand not found, please create brand first  check brand name"
       );
     }
 
+    //find the brand
+    const colorFound = await Color.findOne({
+      _id: colors,
+    });
+
+    if (!colorFound) {
+      throw new Error(
+        "colors not found, please create color first  check color name"
+      );
+    }
   // create the product
     const product = await Product.create({
       name,
       description,
       category,
-      brand:brandFound._id,
+      brand,
       colors,
       image_link,
       user: req.userAuthId,
@@ -78,15 +88,21 @@ const createProduct = asyncHandler(async (req, res) => {
       totalQty,
     });
 
-    // push the product the category
+    // push the product into category
     categoryFound.products.push(product._id);
     // resave
     await categoryFound.save();
 
-    // push the product the category
+    // push the product into brand
     brandFound.products.push(product._id);
     // resave
     await brandFound.save();
+
+
+    // push the product into color
+    colorFound.products.push(product._id);
+    // resave
+    await colorFound.save();
 
     // send response
     res.json({
@@ -142,7 +158,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
     }
 
     // await the query
-    const products = await productQuery.populate("category brand");
+    const products = await productQuery.populate("category brand colors");
 
     res.json({
       status: "success",
@@ -271,6 +287,16 @@ const deleteSingleProduct = asyncHandler(async (req, res) => {
       },
     });
 
+    //delete colors model product id
+    // Update each color individually
+      await Promise.all(product?.colors?.map(async(color) => {
+        return await Color.findByIdAndUpdate(
+          color._id,
+          { $pull: { products: product._id } },
+          { new: true }
+        );
+      })
+    )
     res.json({
       product,
     });

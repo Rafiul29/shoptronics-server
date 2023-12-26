@@ -20,11 +20,13 @@ const productSchema=new mongoose.Schema({
     required:true,
     ref:"Category",
   },
-  colors:{
-    type:mongoose.Schema.Types.ObjectId,
-    required:true,
-    ref:"Color",
-  },
+  colors:[
+    {
+      type:mongoose.Schema.Types.ObjectId,
+      required:true,
+      ref:"Color",
+    }
+  ],
   image_link:
     {
       type:String,

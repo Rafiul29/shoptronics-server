@@ -55,7 +55,7 @@ const getAllColors = asyncHandler(async (req, res) => {
 
     res.json({
       status: "success",
-      message: "Brand fetched successfully",
+      message: "colors fetched successfully",
       colors,
     });
 
@@ -85,7 +85,7 @@ const getSingleColor = asyncHandler(async (req, res) => {
 
     res.json({
       status: "success",
-      message: "Colors fetch successfully",
+      message: "color fetch successfully",
       brand,
     });
   } catch (error) {
@@ -121,7 +121,7 @@ const updateSingleColor = asyncHandler(async (req, res) => {
 
     res.json({
       status: "success",
-      message: "brand updated successfully",
+      message: "color updated successfully",
       color,
     });
   }catch (error) {
@@ -154,7 +154,7 @@ const deleteSingleColor = asyncHandler(async (req, res) => {
 
     res.json({
       status: "success",
-      message: "brand deleted successfully",
+      message: "color deleted successfully",
       color,
     });
   } catch (error) {
