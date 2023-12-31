@@ -1,101 +1,102 @@
 const User = require("../models/user.Model");
+const asyncHandler = require("express-async-handler");
 const validator = require("validator");
-const bcrypt = require("bcrypt");
-const asyncHandler=require("express-async-handler");
-const { generateToken } = require("../utils/generateToken");
-const { getTokenFromHeader } = require("../utils/getTokenFromHeader");
-const {verifyToken}=require("../utils/verifyToken")
 
-const registerUser = asyncHandler(async (req, res) => {
-  try{
-    const { fullname, email, password,phone} = req.body;
+const getSingleUser = asyncHandler(async (req, res) => {
+  try {
 
-    if(!fullname||!email||!password || !phone){
-      throw new Error("Must fill name, email and password")
-    }
+    const id=req.userAuthId;
 
-    //check user exists
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      // throw
-      throw new Error("User already exists");
-    }
-    if (!validator.isEmail(email)) {
-      throw new Error("invalid email");
-    }
+    const user = await User.findById(id);
 
-    if (!validator.isStrongPassword(password)) {
-      throw new Error(
-        "Password must 8+ charm contains uppercase lowercase, number and special char"
-      );
-    }
-    // salt
-    const salt = await bcrypt.genSalt(10);
-    // hash password
-    const hash = await bcrypt.hash(password, salt);
-    console.log(hash);
-    // create the user
-    const user = await User.create({
-      fullname,
-      email,
-      password: hash,
-      phone,
-    });
     res.status(200).json({
       status: "success",
-      message: "User registered Successfully",
-      data: user,
+      message: "User fetch Successfully",
+      user,
     });
-
-  }catch(error){
+  } catch (error) {
     res.status(404).json({
       status: "Failed",
       message: error.message,
     });
   }
-})
+});
 
-const loginUser = asyncHandler(async (req, res) => {
- 
-    const {email,password}=req.body;
+// update user
+const updateUser = asyncHandler(async (req, res) => {
+  try {
 
-    if(!email || !password){
-      throw new Error("Must  fill email and password")
+    const id=req.userAuthId;
+
+    const { fullname, email, phone } = req.body;
+
+    if (!fullname || !email || !phone) {
+      throw new Error("Must fill name, email ");
     }
 
-// find the user in db by email only
-    const userFound=await User.findOne({email})
-
-    if(!userFound){
-      throw new Error("Incorrect email or password");
+    if (!validator.isEmail(email)) {
+      throw new Error("invalid email");
     }
 
-    const match=await bcrypt.compare(password,userFound.password);
+    const user = await User.findByIdAndUpdate(
+      id,
+      {
+        fullname,
+        email,
+        phone,
+      },
+      { new: true }
+    );
 
-    if(!match){
-      throw new Error("Incorrect email or password");
-    }
-
-    res.status(201).json({
+    res.status(200).json({
       status: "success",
-      message: "User login Successfully",
-      userFound,
-      token:generateToken(userFound?._id)
-    })
+      message: "User updated Successfully",
+      user,
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: "Failed",
+      message: error.message,
+    });
+  }
+});
+
+const deleteUser=asyncHandler(async(req,res)=>{
+  try {
+    const id = req.userAuthId;
+    const user = await User.findByIdAndDelete({ _id: id });
+    res.json({
+      msg: " user delete successfully",
+      user,
+    });
+  } catch (error) {
+    res.json({
+      status: "Failed",
+      msg: error.message,
+    });
+  }
 })
 
 
-const getUserProfile=asyncHandler(async(req,res)=>{
-const id=req.userAuthId
-const user =await User.findById({_id:id})
-  res.json({
-    msg:"Welcome to profile page",
-    user,
-  })
-})
+// get all users
+const getAllUsers = asyncHandler(async (req, res) => {
+  try {
+    const users = await User.find()
+    res.json({
+      msg: "All users fetch successfully",
+      users,
+    });
+  } catch (error) {
+    res.json({
+      status: "Failed",
+      msg: error.message,
+    });
+  }
+});
 
 module.exports = {
-  registerUser,
-  loginUser,
-  getUserProfile,
+  getAllUsers,
+  updateUser,
+  getSingleUser,
+  deleteUser
 };

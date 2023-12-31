@@ -2,19 +2,24 @@
 const express=require('express');
 
 // internal import
-const { registerUser,loginUser,getUserProfile} = require('../controllers/users.controller');
-const isloggedIn=require("../middlewares/isLoggedIn")
+const {getAllUsers,updateUser,getSingleUser,deleteUser}=require("../controllers/users.Controller")
+
+const isloggedIn=require("../middlewares/isLoggedIn");
+const isAdmin = require('../middlewares/isAdmin');
 
 //router
 const router=express.Router();
 
-// register an user
-router.post("/register",registerUser)
+// get single user
+router.get("/profile",isloggedIn,getSingleUser)
 
-//login an user
-router.post('/login',loginUser);
+// update user
+router.put("/update-profile",isloggedIn,updateUser);
 
-// user profile
-router.get("/profile",isloggedIn,getUserProfile)
+//delete user 
+router.delete("/delete-profile",isloggedIn,deleteUser)
+
+// get All users
+router.get("/",isloggedIn,isAdmin,getAllUsers)
 
 module.exports=router;
