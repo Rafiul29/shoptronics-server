@@ -1,16 +1,15 @@
 const User = require("../models/user.Model");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
-const asyncHandler=require("express-async-handler");
+const asyncHandler = require("express-async-handler");
 const { generateToken } = require("../utils/generateToken");
 
-
 const registerUser = asyncHandler(async (req, res) => {
-  try{
-    const { fullname, email, password,phone } = req.body;
+  try {
+    const { fullname, email, password, phone } = req.body;
 
-    if(!fullname||!email||!password || !phone){
-      throw new Error("Must fill name, email and password")
+    if (!fullname || !email || !password || !phone) {
+      throw new Error("Must fill name, email and password");
     }
 
     //check user exists
@@ -32,7 +31,6 @@ const registerUser = asyncHandler(async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     // hash password
     const hash = await bcrypt.hash(password, salt);
-    console.log(hash);
     // create the user
     const user = await User.create({
       fullname,
@@ -40,58 +38,53 @@ const registerUser = asyncHandler(async (req, res) => {
       password: hash,
       phone,
     });
+    const token = generateToken(user?._id);
     res.status(200).json({
-      status: "success",
-      message: "User registered Successfully",
+      token,
       user,
     });
-  }catch(error){
+  } catch (error) {
     res.status(404).json({
       status: "failed",
       message: error.message,
     });
   }
-})
+});
 
 const loginUser = asyncHandler(async (req, res) => {
- 
-    try{
-      const {email,password}=req.body;
+  try {
+    const { email, password } = req.body;
 
-    if(!email || !password){
-      throw new Error("Must  fill email and password")
+    if (!email || !password) {
+      throw new Error("Must  fill email and password");
     }
 
-// find the user in db by email only
-    const findUser=await User.findOne({email})
+    // find the user in db by email only
+    const user = await User.findOne({ email });
 
-    if(!findUser){
+    if (!user) {
       throw new Error("Incorrect email or password");
     }
 
-    const match=await bcrypt.compare(password,findUser.password);
+    const match = await bcrypt.compare(password, user.password);
 
-    if(!match){
+    if (!match) {
       throw new Error("Incorrect email or password");
     }
 
-    const token=generateToken(findUser?._id);
+    const token = generateToken(user?._id);
 
     res.status(200).json({
-      status: "success",
-      message: "User login Successfully",
-      findUser,
-      token
-    })
-
-    }catch(error){
-      res.status(404).json({
-        status: "failed",
-        message: error.message,
-      });
-    }
-})
-
+      user,
+      token,
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: "failed",
+      message: error.message,
+    });
+  }
+});
 
 module.exports = {
   registerUser,

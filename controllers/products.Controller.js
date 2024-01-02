@@ -159,14 +159,9 @@ const getAllProducts = asyncHandler(async (req, res) => {
 
     // await the query
     const products = await productQuery.populate("category brand colors");
-
-    res.json({
-      status: "success",
-      message: "Products fetch successfully",
-      products,
-    });
+    res.status(200).json(products);
   } catch (error) {
-    res.json({
+    res.status(400).json({
       status: "failed",
       message: error.message,
     });
@@ -184,17 +179,14 @@ const getSingleProduct = asyncHandler(async (req, res) => {
       res.status(404).json({ message: "product id not found" });
       return;
     }
+    
+    const product = await Product.findById({ _id: pid }).populate("category brand");
 
-    const product = await Product.findById({ _id: pid }).populate("category");
     if (!product) {
       throw new Error("Product not found");
     }
 
-    res.json({
-      status: "success",
-      message: "Product fetched successfully",
-      product,
-    });
+    res.json(product);
   } catch (error) {
     res.json({
       status: "failed",
