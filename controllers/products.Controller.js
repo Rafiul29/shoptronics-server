@@ -4,7 +4,7 @@ const asyncHandler = require("express-async-handler");
 // internal import
 const Product = require("../models/product.model");
 const Category = require("../models/category.model");
-const Brand =require("../models/brand.model")
+const Brand = require("../models/brand.model");
 const { default: mongoose } = require("mongoose");
 const Color = require("../models/color.model");
 
@@ -14,30 +14,27 @@ const Color = require("../models/color.model");
 const createProduct = asyncHandler(async (req, res) => {
   try {
     const {
-      name,
+      title,
       description,
-      category,
-      colors,
+      categoryId,
+      brandId,
       image_link,
-      user,
       price,
       totalQty,
-      brand,
     } = req.body;
     if (
-      !name ||
+      !title ||
       !description ||
-      !category ||
-      !colors ||
+      !categoryId ||
+      !brandId ||
+      !image_link ||
       !price ||
-      !totalQty ||
-      !brand ||
-      !image_link
+      !totalQty
     ) {
       throw new Error("All Filed Must be fill");
     }
     // productExists
-    const productExists = await Product.findOne({ name });
+    const productExists = await Product.findOne({ title });
 
     if (productExists) {
       throw new Error("Product Already Exists");
@@ -45,7 +42,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
     // find the category
     const categoryFound = await Category.findOne({
-      _id: category,
+      _id: categoryId,
     });
 
     if (!categoryFound) {
@@ -56,7 +53,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
     //find the brand
     const brandFound = await Brand.findOne({
-      _id: brand,
+      _id: brandId,
     });
 
     if (!brandFound) {
@@ -65,23 +62,12 @@ const createProduct = asyncHandler(async (req, res) => {
       );
     }
 
-    //find the brand
-    const colorFound = await Color.findOne({
-      _id: colors,
-    });
-
-    if (!colorFound) {
-      throw new Error(
-        "colors not found, please create color first  check color name"
-      );
-    }
-  // create the product
+    // create the product
     const product = await Product.create({
-      name,
+      title,
       description,
-      category,
-      brand,
-      colors,
+      categoryId,
+      brandId,
       image_link,
       user: req.userAuthId,
       price,
@@ -98,18 +84,8 @@ const createProduct = asyncHandler(async (req, res) => {
     // resave
     await brandFound.save();
 
-
-    // push the product into color
-    colorFound.products.push(product._id);
-    // resave
-    await colorFound.save();
-
     // send response
-    res.json({
-      status: "success",
-      message: "Product created successfully",
-      product,
-    });
+    res.json(product);
   } catch (error) {
     res.json({
       status: "failed",
@@ -158,7 +134,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
     }
 
     // await the query
-    const products = await productQuery.populate("category brand colors");
+    const products = await productQuery.populate("categoryId brandId");
     res.status(200).json(products);
   } catch (error) {
     res.status(400).json({
@@ -179,8 +155,10 @@ const getSingleProduct = asyncHandler(async (req, res) => {
       res.status(404).json({ message: "product id not found" });
       return;
     }
-    
-    const product = await Product.findById({ _id: pid }).populate("category brand");
+
+    const product = await Product.findById({ _id: pid }).populate(
+      "categoryId brandId"
+    );
 
     if (!product) {
       throw new Error("Product not found");
@@ -201,15 +179,13 @@ const getSingleProduct = asyncHandler(async (req, res) => {
 const updateSingleProduct = asyncHandler(async (req, res) => {
   try {
     const {
-      name,
+      title,
       description,
-      category,
-      sizes,
-      colors,
-      user,
+      categoryId,
+      brandId,
+      image_link,
       price,
       totalQty,
-      brand,
     } = req.body;
     const pid = req.params.pid;
 
@@ -222,15 +198,13 @@ const updateSingleProduct = asyncHandler(async (req, res) => {
     const product = await Product.findByIdAndUpdate(
       { _id: id },
       {
-        name,
+        title,
         description,
-        category,
-        sizes,
-        colors,
-        user,
+        categoryId,
+        brandId,
+        image_link,
         price,
         totalQty,
-        brand,
       },
       { new: true }
     );
@@ -272,7 +246,7 @@ const deleteSingleProduct = asyncHandler(async (req, res) => {
       },
     });
 
-    // delete brand  Model product id 
+    // delete brand  Model product id
     await Brand.findOneAndUpdate(product.brand, {
       $pull: {
         products: product._id,
@@ -281,14 +255,15 @@ const deleteSingleProduct = asyncHandler(async (req, res) => {
 
     //delete colors model product id
     // Update each color individually
-      await Promise.all(product?.colors?.map(async(color) => {
+    await Promise.all(
+      product?.colors?.map(async (color) => {
         return await Color.findByIdAndUpdate(
           color._id,
           { $pull: { products: product._id } },
           { new: true }
         );
       })
-    )
+    );
     res.json({
       product,
     });

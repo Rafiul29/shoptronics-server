@@ -2,7 +2,7 @@ const mongoose=require("mongoose");
 
 // product schema
 const productSchema=new mongoose.Schema({
-  name:{
+  title:{
     type:String,
     required:true,
   },
@@ -10,23 +10,16 @@ const productSchema=new mongoose.Schema({
     type:String,
     required:true
   },
-  brand:{
+  brandId:{
     type:mongoose.Schema.Types.ObjectId,
     required:true,
     ref:"Brand",
   },
-  category:{
+  categoryId:{
     type:mongoose.Schema.Types.ObjectId,
     required:true,
     ref:"Category",
   },
-  colors:[
-    {
-      type:mongoose.Schema.Types.ObjectId,
-      required:true,
-      ref:"Color",
-    }
-  ],
   image_link:
     {
       type:String,
