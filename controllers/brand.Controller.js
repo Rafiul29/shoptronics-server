@@ -2,7 +2,7 @@
 const asyncHandler = require("express-async-handler");
 
 // internal import
-const Brand =require('../models/brand.model')
+const Brand = require("../models/brand.model");
 const { default: mongoose } = require("mongoose");
 
 // @desc create new category
@@ -28,13 +28,8 @@ const createBrand = asyncHandler(async (req, res) => {
       name,
       user: req.userAuthId,
     });
-
-    res.json({
-      status: "success",
-      message: "Brand created successfully",
-      brand,
-    });
-
+    // response
+    res.json(brand);
   } catch (error) {
     res.json({
       status: "failed",
@@ -49,15 +44,9 @@ const createBrand = asyncHandler(async (req, res) => {
 
 const getAllBrands = asyncHandler(async (req, res) => {
   try {
-
     const brands = await Brand.find({}).populate("products");
-
-    res.json({
-      status: "success",
-      message: "Brand fetched successfully",
-      brands,
-    });
-
+    // response
+    res.json(brands);
   } catch (error) {
     res.json({
       status: "faild",
@@ -72,7 +61,6 @@ const getAllBrands = asyncHandler(async (req, res) => {
 
 const getSingleBrand = asyncHandler(async (req, res) => {
   try {
-    
     const bid = req.params.bid;
 
     if (!mongoose.Types.ObjectId.isValid(bid)) {
@@ -80,13 +68,9 @@ const getSingleBrand = asyncHandler(async (req, res) => {
       return;
     }
 
-    const brand = await Brand.findById({ _id: bid }).populate('products');
-
-    res.json({
-      status: "success",
-      message: "Brand fetch successfully",
-      brand,
-    });
+    const brand = await Brand.findById({ _id: bid }).populate("products");
+    // response
+    res.json(brand);
   } catch (error) {
     res.json({
       status: "failed",
@@ -103,7 +87,7 @@ const updateSingleBrand = asyncHandler(async (req, res) => {
     const { name } = req.body;
     const bid = req.params.bid;
 
-    if(!name){
+    if (!name) {
       throw new Error("Field must be fill");
     }
     //check mogoose id
@@ -117,12 +101,8 @@ const updateSingleBrand = asyncHandler(async (req, res) => {
       { name },
       { new: true }
     );
-
-    res.json({
-      status: "success",
-      message: "brand updated successfully",
-      brand,
-    });
+    // response
+    res.json(brand);
   } catch (error) {
     res.json({
       status: "failed",
@@ -142,16 +122,13 @@ const deleteSingleBrand = asyncHandler(async (req, res) => {
       res.status(404).json({ message: "brand id not found" });
       return;
     }
-    const brandExistingProduct=await Brand.findById({ _id: bid });
-    if(brandExistingProduct?.products.length!==0){
+    const brandExistingProduct = await Brand.findById({ _id: bid });
+    if (brandExistingProduct?.products.length !== 0) {
       throw new Error("Existing brand product must be delete");
     }
     const brand = await Brand.findByIdAndDelete({ _id: bid });
-    res.json({
-      status: "success",
-      message: "brand deleted successfully",
-      brand,
-    });
+    // response
+    res.json(brand);
   } catch (error) {
     res.json({
       status: "failed",

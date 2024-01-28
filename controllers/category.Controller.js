@@ -4,6 +4,7 @@ const asyncHandler = require("express-async-handler");
 // internal import
 const Category = require("../models/category.model");
 const { default: mongoose } = require("mongoose");
+const { response } = require("express");
 
 // @desc create new category
 //@route POST /api/categories
@@ -27,13 +28,8 @@ const createCategory = asyncHandler(async (req, res) => {
       name,
       user: req.userAuthId,
     });
-
-    res.json({
-      status: "success",
-      message: "Category created successfully",
-      category,
-    });
-
+    // response
+    res.json(category);
   } catch (error) {
     res.json({
       status: "failed",
@@ -48,14 +44,9 @@ const createCategory = asyncHandler(async (req, res) => {
 
 const getAllCategory = asyncHandler(async (req, res) => {
   try {
-
     const categories = await Category.find({}).populate("products");
-
-    res.json({
-      status: "success",
-      message: "Category fetched successfully",
-      categories,
-    });
+    // response
+    res.json(categories);
   } catch (error) {
     res.json({
       status: "faild",
@@ -77,13 +68,9 @@ const getSingleCategory = asyncHandler(async (req, res) => {
       return;
     }
 
-    const category = await Category.findById({ _id: cid }).populate('products');
-
-    res.json({
-      status: "success",
-      message: "Category fetch successfully",
-      category,
-    });
+    const category = await Category.findById({ _id: cid }).populate("products");
+    // response
+    res.json(category);
   } catch (error) {
     res.json({
       status: "failed",
@@ -100,7 +87,7 @@ const updateSingleCategory = asyncHandler(async (req, res) => {
     const { name } = req.body;
     const cid = req.params.cid;
 
-    if(!name){
+    if (!name) {
       throw new Error("Field must be fill");
     }
     //check mogoose id
@@ -114,12 +101,8 @@ const updateSingleCategory = asyncHandler(async (req, res) => {
       { name },
       { new: true }
     );
-
-    res.json({
-      status: "success",
-      message: "category updated successfully",
-      category,
-    });
+    // response
+    res.json(category);
   } catch (error) {
     res.json({
       status: "failed",
@@ -140,17 +123,14 @@ const deleteSingleCategory = asyncHandler(async (req, res) => {
       return;
     }
 
-    const categoryExistingProduct=await Category.findById({ _id: cid });
-    if(categoryExistingProduct?.products.length!==0){
+    const categoryExistingProduct = await Category.findById({ _id: cid });
+    if (categoryExistingProduct?.products?.length !== 0) {
       throw new Error("Existing Category product must be delete");
     }
 
     const category = await Category.findByIdAndDelete({ _id: cid });
-    res.json({
-      status: "success",
-      message: "category deleted successfully",
-      category,
-    });
+    // response
+    res.json(category);
   } catch (error) {
     res.json({
       status: "failed",

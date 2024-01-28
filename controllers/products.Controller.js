@@ -187,6 +187,17 @@ const updateSingleProduct = asyncHandler(async (req, res) => {
       price,
       totalQty,
     } = req.body;
+    if (
+      !title ||
+      !description ||
+      !categoryId ||
+      !brandId ||
+      !image_link ||
+      !price ||
+      !totalQty
+    ) {
+      throw new Error("All Filed Must be fill");
+    }
     const pid = req.params.pid;
 
     if (!mongoose.Types.ObjectId.isValid(pid)) {
@@ -196,7 +207,7 @@ const updateSingleProduct = asyncHandler(async (req, res) => {
 
     // update
     const product = await Product.findByIdAndUpdate(
-      { _id: id },
+      { _id: pid },
       {
         title,
         description,
@@ -213,11 +224,8 @@ const updateSingleProduct = asyncHandler(async (req, res) => {
       throw new Error("Product not found");
     }
 
-    res.json({
-      status: "success",
-      message: "Product updated successfully",
-      product,
-    });
+    // response
+    res.json(product);
   } catch (error) {
     res.json({
       status: "failed",
@@ -231,7 +239,9 @@ const updateSingleProduct = asyncHandler(async (req, res) => {
 //access privet/Admin
 const deleteSingleProduct = asyncHandler(async (req, res) => {
   try {
+    
     const pid = req.params.pid;
+
     if (!mongoose.Types.ObjectId.isValid(pid)) {
       res.status(404).json({ message: "product id not found" });
       return;
@@ -253,20 +263,8 @@ const deleteSingleProduct = asyncHandler(async (req, res) => {
       },
     });
 
-    //delete colors model product id
-    // Update each color individually
-    await Promise.all(
-      product?.colors?.map(async (color) => {
-        return await Color.findByIdAndUpdate(
-          color._id,
-          { $pull: { products: product._id } },
-          { new: true }
-        );
-      })
-    );
-    res.json({
-      product,
-    });
+    // response
+    res.json(product);
   } catch (error) {
     res.json({
       status: "failed",
