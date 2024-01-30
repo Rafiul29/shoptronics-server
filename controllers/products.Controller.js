@@ -103,35 +103,35 @@ const getAllProducts = asyncHandler(async (req, res) => {
     let productQuery = Product.find();
 
     // search by name
-    if (req.query.name) {
+    if (req.query.title) {
       productQuery = productQuery.find({
-        name: { $regex: req.query.name, $options: "i" },
+        title: { $regex: req.query.title, $options: "i" },
       });
     }
+  
 
-    // filter by brand
-    if (req.query.brand) {
-      productQuery = productQuery.find({
-        brand: { $regex: req.query.brand, $options: "i" },
-      });
-    }
+     // filter by brand
+     const brandId = req.query.brandId;
+     if (brandId) {
+      productQuery = productQuery.find({brandId});
+     }
 
-    // filter by category
-    if (req.query.category) {
-      productQuery = productQuery.find({
-        category: { $regex: req.query.category, $options: "i" },
-      });
-    }
+     // filter by category
+     const categoryId = req.query.categoryId;
+     
+     if (categoryId) {
+      productQuery = productQuery.find({categoryId});
+     }
 
     // filter by price range
-    if (req.query.price) {
-      const priceRange = req.query.price.split("-");
-      //  gte:grether or equal
-      //  lte: less or equal
-      productQuery = productQuery.find({
-        price: { $gte: priceRange[0], $lte: priceRange[1] },
-      });
-    }
+    // if (req.query.price) {
+    //   const priceRange = req.query.price.split("-");
+    //   //  gte:grether or equal
+    //   //  lte: less or equal
+    //   productQuery = productQuery.find({
+    //     price: { $gte: priceRange[0], $lte: priceRange[1] },
+    //   });
+    // }
 
     // await the query
     const products = await productQuery.populate("categoryId brandId");
