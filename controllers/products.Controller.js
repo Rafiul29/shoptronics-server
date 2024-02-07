@@ -135,6 +135,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
 
     // await the query
     const products = await productQuery.populate("categoryId brandId");
+    console.log(products.length)
     res.status(200).json(products);
   } catch (error) {
     res.status(400).json({
