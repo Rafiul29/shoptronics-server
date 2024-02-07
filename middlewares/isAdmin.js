@@ -1,4 +1,4 @@
-const User = require("../models/user.Model")
+const User = require("../models/user.model")
 
 const isAdmin=async(req,res,next)=>{
   // find the login user
