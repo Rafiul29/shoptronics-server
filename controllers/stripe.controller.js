@@ -7,13 +7,18 @@ const stripe = Stripe(
 
 const createSession = async (req, res) => {
   try {
-    // const { _id, price, title, description, coverPhoto } = req.body.data;
-    console.log(req.userAuthId)
+    const { firstName, lastName, address, city, phoneNumber } = req.body;
+    const { _id, price, title, description, image_link } = req.body.product;
     const customer = await stripe.customers.create({
       metadata: {
-        id:String(req.userAuthId),
-        product:"65b6547ba238cabef26c04f3",
-      }
+        id: req.userAuthId,
+        productId: _id,
+        firstName,
+        lastName,
+        address,
+        city,
+        phoneNumber,
+      },
     });
 
     const line_items = [
@@ -21,11 +26,11 @@ const createSession = async (req, res) => {
         price_data: {
           currency: "usd",
           product_data: {
-            name: "title",
-            // images: [coverPhoto],
-            // description: description,
+            name: title,
+            images: [image_link],
+            description: description,
           },
-          unit_amount: 500 *100,
+          unit_amount: price * 100,
         },
         quantity: 1,
       },
@@ -87,11 +92,11 @@ const createSession = async (req, res) => {
       line_items,
       mode: "payment",
       success_url: `${process.env.CLIENT_URL}/checkout-success`,
-      cancel_url: `${process.env.CLIENT_URL}/product/`,
+      cancel_url: `${process.env.CLIENT_URL}/products`,
     });
     res.send({ url: session.url });
   } catch (error) {
-    res.json({ error:error.message });
+    res.json({ error: error.message });
   }
 };
 

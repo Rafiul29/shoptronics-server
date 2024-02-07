@@ -17,18 +17,19 @@ router.post("/create-checkout-session", isLoggedIn, createSession);
 // create order function
 const createOrder = async (customer, data) => {
   try {
-    const newOrder = new Order({
+    const order = await Order.create({
+      firstName: customer.metadata.firstName,
+      lastName: customer.metadata.lastName,
+      address: customer.metadata.address,
+      city: customer.metadata.city,
+      phoneNumber: customer.metadata.phoneNumber,
       user: customer.metadata.id,
-      customerId: data.customer,
-      paymentIntentId: data.payment_intent,
-      product: customer.metadata.product,
+      product: customer.metadata.productId,
       subtotal: data.amount_subtotal / 100,
       total: data.amount_total / 100,
       shipping: data.customer_details,
       payment_status: data.payment_status,
     });
-
-    const savedOrder = await newOrder.save();
   } catch (err) {
     console.log(err);
   }
@@ -81,7 +82,6 @@ router.post(
     res.send().end();
   }
 );
-
 
 // router.post('/webhook', express.raw({type: 'application/json'}), (req, res) => {
 //   let event = req.body;
