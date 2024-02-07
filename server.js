@@ -14,6 +14,8 @@ const categoriesRouter = require("./routes/categories.Router.js");
 const brandRouter = require("./routes/brand.Routes");
 const colorRouter = require("./routes/color.Routes.js");
 const userRoutes = require("./routes/users.route.js");
+const orderRoutes = require("./routes/orders.Routes.js");
+
 // const reviewRouter = require("./routes/review.Routes");
 
 const {
@@ -37,6 +39,7 @@ app.use("/api/categories/private", categoriesRouter);
 app.use("/api/brands/private", brandRouter);
 app.use("/api/colors/private", colorRouter);
 app.use("/api/users/private", userRoutes);
+app.use("/api/orders/private",orderRoutes);
 // app.use("/api/reviews", reviewRouter);
 
 // not found
