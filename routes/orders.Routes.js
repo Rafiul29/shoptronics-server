@@ -10,7 +10,7 @@ router.get("/",isloggedIn,isAdmin,getAllOrders);
 // get AllOrders 
 
 // get order existing user
-router.get("/user-orders",isloggedIn,getOrderUser);
+router.get("/user",isloggedIn,getOrderUser);
 
 
 

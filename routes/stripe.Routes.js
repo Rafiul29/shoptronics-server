@@ -12,7 +12,7 @@ const stripe = Stripe(
 
 router.post("/create-checkout-session", isLoggedIn, createSession);
 
-// stripe listen --forward-to localhost:4000/api/stripe/webhook
+// stripe listen --forward-to localhost:5000/api/stripe/webhook
 
 // create order function
 const createOrder = async (customer, data) => {

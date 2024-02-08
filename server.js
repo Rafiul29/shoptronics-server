@@ -40,7 +40,6 @@ app.use("/api/brands/private", brandRouter);
 app.use("/api/colors/private", colorRouter);
 app.use("/api/users/private", userRoutes);
 app.use("/api/orders/private",orderRoutes);
-app.use("/api/orders/private",orderRoutes);
 app.use("/api/stripe", stripeRoutes);
 // app.use("/api/reviews", reviewRouter);
 
